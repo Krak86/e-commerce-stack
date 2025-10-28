@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model addresses {
+  id          Int        @id @default(autoincrement())
+  user_id     String     @db.Uuid
+  full_name   String
+  phone       String?
+  country     String
+  city        String
+  postal_code String?
+  street      String
+  house       String?
+  apartment   String?
+  is_default  Boolean?   @default(false)
+  created_at  DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?  @default(now()) @updatedAt @db.Timestamp(6)
+  users       users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orders      orders[]
+  shipping    shipping[]
+}
+
+model cart_items {
+  id             Int       @id @default(autoincrement())
+  user_id        String    @db.Uuid
+  product_id     Int
+  quantity       Int       @default(1)
+  variant        String?
+  price_snapshot Decimal?  @db.Decimal(10, 2)
+  added_at       DateTime? @default(now()) @db.Timestamp(6)
+  products       products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users          users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, product_id, quantity], map: "unique_cart_item_quantity")
+}
+
+model categories {
+  id                    Int                     @id @default(autoincrement())
+  slug                  String                  @unique
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  category_translations category_translations[]
+  products              products[]
+}
+
+model category_translations {
+  id            Int           @id @default(autoincrement())
+  category_id   Int
+  language_code language_code
+  name          String
+  description   String?
+  categories    categories    @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([category_id, language_code])
+}
+
+model order_items {
+  id                  Int      @id @default(autoincrement())
+  order_id            Int
+  product_id          Int
+  quantity            Int
+  price_at_order_time Decimal  @db.Decimal(10, 2)
+  variant             String?
+  orders              orders   @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  products            products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model orders {
+  id                  Int           @id @default(autoincrement())
+  user_id             String        @db.Uuid
+  status              order_status  @default(pending)
+  total_amount        Decimal       @db.Decimal(10, 2)
+  payment_method      String?
+  shipping_address_id Int?
+  notes               String?
+  created_at          DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?     @db.Timestamp(6)
+  order_items         order_items[]
+  addresses           addresses?    @relation(fields: [shipping_address_id], references: [id], onUpdate: NoAction)
+  users               users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  payments            payments[]
+  shipping            shipping[]
+}
+
+model payment_method_translations {
+  id                Int             @id @default(autoincrement())
+  payment_method_id Int
+  language_code     language_code
+  name              String
+  description       String?
+  payment_methods   payment_methods @relation(fields: [payment_method_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model payment_methods {
+  id                          Int                           @id @default(autoincrement())
+  code                        String                        @unique
+  is_active                   Boolean?                      @default(true)
+  payment_method_translations payment_method_translations[]
+  payments                    payments[]
+}
+
+model payments {
+  id              Int              @id @default(autoincrement())
+  order_id        Int
+  amount          Decimal          @db.Decimal(10, 2)
+  currency        String           @default("UAH")
+  status          payment_status   @default(pending)
+  transaction_id  String?
+  paid_at         DateTime?        @db.Timestamp(6)
+  created_at      DateTime?        @default(now()) @db.Timestamp(6)
+  method_id       Int?
+  payment_methods payment_methods? @relation(fields: [method_id], references: [id], onDelete: Restrict, onUpdate: NoAction, map: "fk_payment_method")
+  orders          orders           @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model product_images {
+  id         Int       @id @default(autoincrement())
+  product_id Int
+  image_url  String
+  is_primary Boolean?  @default(false)
+  position   Int?      @default(0)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model product_translations {
+  id            Int           @id @default(autoincrement())
+  product_id    Int
+  language_code language_code
+  name          String
+  description   String?
+  products      products      @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([product_id, language_code])
+}
+
+model products {
+  id                   Int                    @id @default(autoincrement())
+  category_id          Int
+  slug                 String                 @unique
+  price                Decimal                @db.Decimal(10, 2)
+  stock                Int?                   @default(0)
+  image_url            String?
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  cart_items           cart_items[]
+  favorites            favorites[]
+  order_items          order_items[]
+  product_images       product_images[]
+  product_translations product_translations[]
+  categories           categories             @relation(fields: [category_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+}
+
+model shipping {
+  id                  Int               @id @default(autoincrement())
+  order_id            Int
+  status              shipping_status   @default(pending)
+  tracking_number     String?
+  shipped_at          DateTime?         @db.Timestamp(6)
+  delivered_at        DateTime?         @db.Timestamp(6)
+  shipping_address_id Int?
+  created_at          DateTime?         @default(now()) @db.Timestamp(6)
+  method_id           Int?
+  shipping_methods    shipping_methods? @relation(fields: [method_id], references: [id], onDelete: Restrict, onUpdate: NoAction, map: "fk_shipping_method")
+  orders              orders            @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  addresses           addresses?        @relation(fields: [shipping_address_id], references: [id], onUpdate: NoAction)
+}
+
+model shipping_method_translations {
+  id                 Int              @id @default(autoincrement())
+  shipping_method_id Int
+  language_code      language_code
+  name               String
+  description        String?
+  shipping_methods   shipping_methods @relation(fields: [shipping_method_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model shipping_methods {
+  id                           Int                            @id @default(autoincrement())
+  code                         String                         @unique
+  is_active                    Boolean?                       @default(true)
+  shipping                     shipping[]
+  shipping_method_translations shipping_method_translations[]
+}
+
+model users {
+  id                   String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                String         @unique @db.VarChar(255)
+  password_hash        String
+  name                 String?
+  avatar_url           String?
+  created_at           DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at           DateTime?      @default(now()) @db.Timestamp(6)
+  confirmed_at         DateTime?      @db.Timestamp(6)
+  confirmation_sent_at DateTime?      @db.Timestamp(6)
+  invited_at           DateTime?      @db.Timestamp(6)
+  last_signed_in_at    DateTime?      @db.Timestamp(6)
+  is_active            Boolean?       @default(true)
+  is_banned            Boolean?       @default(false)
+  metadata             Json?
+  auth_provider        String?        @default("local")
+  provider_user_id     String?
+  role                 user_role?     @default(user)
+  language_code        language_code? @default(uk)
+  addresses            addresses[]
+  cart_items           cart_items[]
+  favorites            favorites[]
+  orders               orders[]
+}
+
+model favorites {
+  id         Int       @id @default(autoincrement())
+  user_id    String    @db.Uuid
+  product_id Int
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product")
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+
+  @@unique([user_id, product_id], map: "unique_favorite")
+}
+
+model lidor {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+enum user_role {
+  guest
+  user
+  admin
+}
+
+enum order_status {
+  pending
+  paid
+  shipped
+  delivered
+  cancelled
+  other
+}
+
+enum payment_status {
+  pending
+  paid
+  failed
+  refunded
+  other
+}
+
+enum shipping_status {
+  pending
+  shipped
+  delivered
+  cancelled
+  other
+}
+
+enum language_code {
+  uk
+  en
+  ru
+}

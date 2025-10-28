@@ -1,0 +1,38 @@
+{
+  "allRightsReserved": "All rights reserved.",
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to your account to continue",
+    "email": "Email Address",
+    "password": "Password",
+    "loginBtn": "Login",
+    "dontHaveAccount": "Don't have an account?",
+    "signUpLink": "Sign Up"
+  },
+  "register": {
+    "title": "Create Account",
+    "subtitle": "Join us today and start your journey",
+    "name": "Full Name",
+    "namePlaceholder": "John Doe",
+    "email": "Email Address",
+    "password": "Password",
+    "registerBtn": "Register",
+    "haveAccount": "Already have an account?",
+    "loginLink": " Sign in"
+  },
+  "logout": {
+    "title": "Logout From Your Account",
+    "logoutBtn": "Logout",
+    "success": "You have been successfully logged out."
+  },
+  "error": {
+    "loginFailed": "Login failed",
+    "invalidCredentials": "Invalid credentials",
+    "registerFailed": "Registration failed",
+    "logoutFailed": "Logout failed",
+    "requiredField": "This field is required.",
+    "invalidName": "Name must be at least 1 character.",
+    "invalidEmail": "Please enter a valid email address.",
+    "invalidPassword": "Password must be at least 6 characters."
+  }
+}

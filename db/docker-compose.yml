@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db_e-commerce
+    networks:
+      - shop_network_e-commerce
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      #- pgdata:/var/lib/postgresql/data
+      - e-commerce_pgdata:/var/lib/postgresql/data
+      #- init_db_pgdata:/var/lib/postgresql/data
+      #- ./initdb:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    image: redis:7
+    container_name: redis_cache_e-commerce
+    networks:
+      - shop_network_e-commerce
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  #db_pgdata:
+  #init_db_pgdata:
+  e-commerce_pgdata:
+    external: true
+  redis_data:
+
+networks:
+  shop_network_e-commerce:
