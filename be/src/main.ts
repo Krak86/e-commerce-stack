@@ -114,7 +114,7 @@ ORDER FLOW:
 6. if user clears order_items before finishing order, checkout is closed as well
 
 REDIS:
-- Кешуй всі GET через Redis (ключ = URL + query)
++ Кешуй всі GET через Redis (ключ = URL + query)
 
 RATE LIMIT: https://docs.nestjs.com/security/rate-limiting
 - Додай rate limiting по IP або userId
@@ -125,7 +125,7 @@ RATE LIMIT: https://docs.nestjs.com/security/rate-limiting
 
 HOSTS: (C:\Windows\System32\drivers\etc\hosts)
 + api.[example.com] - nest js (single microservice, single db)
-- auth.[example.com] - login app (SPO, react js?)
++ auth.[example.com] - login app (SPO, react js?)
 - app.[example.com] - next js, (main shop app)
 - admin.[example.com] - angular app (CRUD products, categories, payments, orders)
 - profile.[example.com] - vue js app (CRUD user data, favorites, addresses, cart items)
