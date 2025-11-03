@@ -8,7 +8,7 @@ import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { COOKIE_REFRESH } from '@/utils/static';
+import { getCookieAccessOptions, getCookieRefreshOptions } from '@/utils';
 
 @Injectable()
 export class ResponseRemoveRefreshToken implements NestInterceptor {
@@ -16,7 +16,8 @@ export class ResponseRemoveRefreshToken implements NestInterceptor {
     const res = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
       tap(() => {
-        res.clearCookie('refreshToken', COOKIE_REFRESH);
+        res.clearCookie('refreshToken', getCookieRefreshOptions());
+        res.clearCookie('accessToken', getCookieAccessOptions());
       }),
     );
   }

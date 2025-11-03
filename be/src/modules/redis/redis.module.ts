@@ -50,7 +50,7 @@ import { RedisController } from './redis.controller';
 
           return {
             stores: [store],
-            ttl: DEFAULT_REDIS_CACHE_TTL, // Default TTL: 60 seconds (in milliseconds)
+            ttl: DEFAULT_REDIS_CACHE_TTL,
           };
         } catch (error) {
           console.error('❌ Failed to connect to Redis:', error);

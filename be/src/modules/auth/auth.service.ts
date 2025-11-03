@@ -152,13 +152,13 @@ export class AuthService {
     const accessToken =
       this.jwt.sign(payload, {
         secret: this.accessSecret,
-        expiresIn: TOKENS_LIFETIME.access as number,
+        expiresIn: TOKENS_LIFETIME.access,
       }) ?? '';
 
     const refreshToken =
       this.jwt.sign(payload, {
         secret: this.refreshSecret,
-        expiresIn: TOKENS_LIFETIME.refresh as number,
+        expiresIn: TOKENS_LIFETIME.refresh,
       }) ?? '';
 
     return { accessToken, refreshToken };

@@ -18,7 +18,7 @@ import { AuthController } from './auth.controller';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('ACCESS_SECRET'),
-        signOptions: { expiresIn: TOKENS_LIFETIME?.access as number },
+        signOptions: { expiresIn: TOKENS_LIFETIME?.access },
       }),
     }),
   ],

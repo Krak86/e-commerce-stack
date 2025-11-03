@@ -8,7 +8,7 @@ import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { COOKIE_REFRESH } from '@/utils/static';
+import { getCookieRefreshOptions, getCookieAccessOptions } from '@/utils';
 import { AccessEntity } from '@/modules/auth/entities';
 
 @Injectable()
@@ -17,13 +17,20 @@ export class ResponseRefreshToken implements NestInterceptor {
     const res = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
       map((data: AccessEntity) => {
-        const { refreshToken, ...rest } = data;
+        const { refreshToken, accessToken, ...rest } = data;
 
         if (refreshToken) {
-          res.cookie('refreshToken', refreshToken, COOKIE_REFRESH);
+          res.cookie('refreshToken', refreshToken, getCookieRefreshOptions());
+        }
+
+        if (accessToken) {
+          res.cookie('accessToken', accessToken, getCookieAccessOptions());
         }
         // exclude refreshToken from response body
-        return rest;
+        return {
+          ...rest,
+          accessToken,
+        };
       }),
     );
   }

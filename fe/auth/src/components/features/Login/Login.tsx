@@ -12,7 +12,10 @@ import useAuthActions from "@/utils/hooks/authActions";
 const Login = () => {
   const { t } = useTranslation("");
   const { lang } = useParams<"lang">();
-  const { handleLogin, handleRedirect } = useAuthActions();
+  const {
+    handleLogin,
+    // handleRedirect
+  } = useAuthActions();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,9 +42,9 @@ const Login = () => {
     } else {
       setIsError(null);
     }
-    // setIsLoading(false);
+    setIsLoading(false);
 
-    handleRedirect();
+    // handleRedirect();
   };
 
   return (
@@ -71,6 +74,7 @@ const Login = () => {
           <Input
             id="password"
             type="password"
+            name="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

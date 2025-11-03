@@ -9,27 +9,24 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const dev = process.env.NODE_ENV !== 'production'
-
-// In development, disable SSL certificate verification for self-signed certificates
-if (dev) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-  console.log('⚠️  Development mode: SSL certificate verification disabled')
-}
 const hostname = process.env.NEXT_PUBLIC_HOSTNAME || 'app.example.com'
 const port = parseInt(process.env.NEXT_PUBLIC_PORT || '3002', 10)
 const domainName = process.env.NEXT_PUBLIC_DOMAIN_NAME || 'app'
 const domainCommon = process.env.NEXT_PUBLIC_DOMAIN_COMMON || 'localhost'
 const host = `${domainName}.${domainCommon}`
 
-console.log('Server configuration:')
-console.log(`- Environment: ${dev ? 'development' : 'production'}`)
+console.log('Production server configuration:')
+console.log(`- Environment: production`)
 console.log(`- Hostname: ${hostname}`)
 console.log(`- Port: ${port}`)
 console.log(`- Certificate host: ${host}`)
 
-// Initialize Next.js app
-const app = next({ dev, hostname, port })
+// Initialize Next.js app in production mode
+const app = next({
+  dev: false,  // Always production
+  hostname,
+  port
+})
 const handle = app.getRequestHandler()
 
 // HTTPS options
@@ -50,6 +47,6 @@ app.prepare().then(() => {
     }
   }).listen(port, hostname, err => {
     if (err) throw err
-    console.log(`> Ready on https://${hostname}:${port}`)
+    console.log(`> Production server ready on https://${hostname}:${port}`)
   })
 })

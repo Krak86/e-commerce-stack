@@ -1,37 +1,29 @@
 import { AscType, PaymentStatus, OrderStatus } from '@/utils/type';
 import { language_code } from '@prisma/client';
 
-export const LANGUAGES: language_code[] = ['uk', 'en'];
+export const LANGUAGES: readonly language_code[] = ['uk', 'en'] as const;
 
-export const ASCENDING: AscType[] = ['asc', 'desc'];
+export const ASCENDING: readonly AscType[] = ['asc', 'desc'] as const;
 
-export const COOKIE_REFRESH = {
-  httpOnly: true,
-  secure: true,
-  sameSite: 'none' as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  domain: process.env.DOMAIN_COMMON
-    ? `.${process.env.DOMAIN_COMMON}`
-    : undefined,
-};
-
-export const TOKENS_LIFETIME: Record<string, any> = {
+export const TOKENS_LIFETIME: Readonly<Record<string, number>> = {
   access: 1800000, // '30m',
   refresh: 604800000, // '7d',
-};
+  cacheTtl: 3600, // '1h',
+  redisCacheTtl: 3600, // '1h',
+} as const;
 
-export const ALLOWED_KEYS = ['price', 'stock'] as const;
+export const ALLOWED_KEYS: readonly string[] = ['price', 'stock'] as const;
 
-export const ROLES = ['guest', 'user', 'admin'] as const;
+export const ROLES: readonly string[] = ['guest', 'user', 'admin'] as const;
 
 export const CACHE_META_KEY = 'cache:meta';
 
 export const REDIS_CACHE_META_KEY = 'redis-cache:meta';
 
-export const DEFAULT_CACHE_TTL = 3600;
-export const DEFAULT_REDIS_CACHE_TTL = 3600;
+export const DEFAULT_CACHE_TTL = TOKENS_LIFETIME.cacheTtl;
+export const DEFAULT_REDIS_CACHE_TTL = TOKENS_LIFETIME.redisCacheTtl;
 
-export const PAYMENT_STATUS: PaymentStatus[] = [
+export const PAYMENT_STATUS: readonly PaymentStatus[] = [
   'pending',
   'paid',
   'failed',
@@ -39,9 +31,9 @@ export const PAYMENT_STATUS: PaymentStatus[] = [
   'other',
 ] as const;
 
-export const PAYMENT_CURRENCY = 'UAH';
+export const PAYMENT_CURRENCY = 'UAH' as const;
 
-export const ORDER_STATUS: OrderStatus[] = [
+export const ORDER_STATUS: readonly OrderStatus[] = [
   'pending',
   'paid',
   'other',
@@ -50,7 +42,7 @@ export const ORDER_STATUS: OrderStatus[] = [
   'cancelled',
 ] as const;
 
-export const FORBIDDEN_TO_UPDATE: OrderStatus[] = [
+export const FORBIDDEN_TO_UPDATE: readonly OrderStatus[] = [
   'shipped',
   'delivered',
   'cancelled',

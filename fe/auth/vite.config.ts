@@ -25,6 +25,14 @@ export default defineConfig(({ mode }) => {
         cert: readFileSync(join(__dirname, ".", "cert", `${host}.pem`)),
       },
     },
+    preview: {
+      host,
+      port,
+      https: {
+        key: readFileSync(join(__dirname, ".", "cert", `${host}-key.pem`)),
+        cert: readFileSync(join(__dirname, ".", "cert", `${host}.pem`)),
+      },
+    },
     resolve: {
       alias: {
         "@": resolve(__dirname, "src"),
